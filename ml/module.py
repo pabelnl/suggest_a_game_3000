@@ -151,7 +151,7 @@ def fill_na_for(df):
     print("* Finished replacing and filtering nans.")
     return df
 
-def clean_format_and_export(df):
+def clean_format_and_export(df, temporary=True):
     # Dimensionality Reduction, Note: "Unnamed: 0" is added everytime the csv is exported and loaded
     df.drop(["Unnamed: 0", "tba","slug","id","background_image", "dominant_color", "reviews_text_count", "added", "added_by_status",
          "updated","user_game","saturated_color", "dominant_color", "short_screenshots", "parent_platforms", "stores"], axis=1, inplace=True, errors='ignore')
@@ -191,9 +191,9 @@ def clean_format_and_export(df):
     df = fill_na_for(df)
     
     # Export the records to a csv
-    file_name1 = "games15759_formatted_clean.csv"
+    file_name1 = f"{len(df)}_TEMP_games_formatted_clean.csv" if temporary else f"{len(df)}_games_formatted_clean.csv"
     df.to_csv(file_name1)
-    print("* Created export csv file named: ",file_name1)
+    print("* Created export csv file named: ", file_name1)
     
     # Read from csv
     df = pd.read_csv(file_name1)
@@ -203,9 +203,12 @@ def clean_format_and_export(df):
     # Replace empty tag with singleplayer, games should let be at least 1 singleplayer
     df['tags_extracted'] = df['tags_extracted'].replace("[]", "['Singleplayer']")
     
+    # Format rating
     df = format_rating(df)
-    print("* Created export csv file ready for clustering named: ",file_name1)
-    df.to_csv("15759_games_clean_formatted_ready_4_clustering.csv")
+    # Selecting name of the csv to export, if temporary flag is True, the name will change
+    file_name1 = f"{len(df)}TEMP_games_clean_formatted_ready_4_clustering.csv" if temporary else f"{len(df)}_games_clean_formatted_ready_4_clustering.csv"
+    print("* Created export csv file ready for clustering named: ", file_name1)
+    df.to_csv(file_name1)
     
     return df
 
