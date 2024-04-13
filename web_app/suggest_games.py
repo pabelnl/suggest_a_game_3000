@@ -164,7 +164,7 @@ def get_game_recommendation(df, cluster):
     return random_game
     
 
-def cluster_search(temp_df, selected_game, df):
+def cluster_search(games_df, df):
     """Takes a selected game and searches a DataFrame for other games belonging to the same cluster.
     Recommends a random game from the matching cluster.
 
@@ -182,17 +182,21 @@ def cluster_search(temp_df, selected_game, df):
         * A recommendation for a similar game (name and platform) from the same cluster.
         * "No suggestions found" if no other games are found within the cluster.
     """
-    # Get row with the game data
-    # selected_game = temp_df[temp_df["name"] == game_selection.str.lower()].reset_index(drop=True)
     
     # Retrieve cluster number
-    cluster = selected_game["cluster"].iloc[0]
-    # Get a random game from the top 100 for the cluster group
+    cluster = games_df["cluster"].iloc[0]
+    # Get a random game from the top 100 rank for the cluster group
     random_game = get_game_recommendation(df, cluster)
     # Retrieve available platforms
     available_platforms = get_available_platforms(random_game)
-        
-    print(f'We also recommend: {random_game["name"].iloc[0].title()} on {", ".join(available_platforms)}')
+
+    #
+    result = {
+        "name": random_game["name"].iloc[0],
+        "platforms": f'{", ".join(available_platforms)}'
+    }
+
+    return result
     
 def get_suggestions(df, user_input):
     """Provides an interactive game search and recommendation experience.
@@ -213,28 +217,14 @@ def get_suggestions(df, user_input):
         * The 'cluster_search' and 'get_cluster_for_game' functions (ensure these are documented). 
     """
     
-    temp_df = df[df['name'].str.startswith(user_input)].reset_index(drop=True)
+    games_df = df[df['name'] == user_input].reset_index(drop=True)
     
-    # Multiple records scenario
-    if len(temp_df) > 1:
-        
-        return temp_df
-        # print(f'Found {len(temp_df)} results:')
-        
-        # # Show a list of games and allow the user to select one
-        # selected_game = select_game_from_list(temp_df)
-        
-        # cluster_search(temp_df,selected_game, df)
-        
     # One record scenario
-    elif len(temp_df) == 1:
-        available_platforms = get_available_platforms(temp_df)
-                        
-        print("--------------------------------------------------------------------------------------------")
-        print(f'Found {temp_df["name"][0].title()} on {", ".join(available_platforms)} released {temp_df["released"].dt.year.to_string(index=False)}')
-        print("--------------------------------------------------------------------------------------------")
-        cluster_search(temp_df,temp_df, df)
+    if len(games_df) == 1:
+        result = cluster_search(games_df, df)
         
+        return result
+    
     # No records scenario
     elif len(temp_df) == 0:
         search_params = {
