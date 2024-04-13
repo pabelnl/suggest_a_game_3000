@@ -8,7 +8,7 @@
     color:white;
     width: 300px;
     padding: 20px; 
-    background-color: #50b1f772;
+    background-color: #50b1f75e;
     box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.2);
     border-radius: 6px;
   }
@@ -36,6 +36,7 @@
 .button-43:hover {
   background-image: linear-gradient(-180deg, #1D95C9 0%, #17759C 100%);
 }
+
 
 @media (min-width: 768px) {
   .button-43 {
