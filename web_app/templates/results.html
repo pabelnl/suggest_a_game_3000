@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Recommend a game 3000!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
+</head>
+
+<body>
+    <div class="main">
+        <h1>Hello {{ name.title() }}</h1>
+
+        <div class="container-wrapper">
+            <div name="container1" class="container">
+                {% if suggest_boolean == "False" %}
+                <h2>Select a game from the list:</h2>
+                {% else %}
+                <h2>Selected game:</h2>
+                {% endif %}
+                <div class="game-selection-container">
+                    <select id="game-selection" name="games" style="display: inline-block">
+                        {% if suggest_boolean == "False" %}
+                        {% for row in new_game_list %}
+                        <option value="{{ row.title() }}">{{ row.title() }}</option>
+                        {% endfor %}
+                        {% else %}
+                        {% for row in previous_game_list %}
+                        <option value="{{ row.title() }}">{{ row.title() }}</option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <form id="form_" method="POST" action="/process">
+                    <input style="display: none;" type="text" name="name" value="{{ name.title() }}">
+                    <input style="display: none;" id="video_game_name" type="text" name="video_game_name">
+                    <input style="display: none;" type="text" name="suggest_boolean" value="True">
+                    <input style="display: none;" type="text" name="previous_game_list" value="{{ new_game_list }}">
+                    {% if suggest_boolean == "False" %}
+                    <input class="get-suggestion-button" type="submit" value="Get suggestion">
+                    {% endif %}
+                </form>
+            </div> <!-- container 1 ends -->
+            <div name="container2" class="container">
+                <div class="game-selection-container">
+                    {% if suggest_boolean == "True" %}
+                    <select id="game-selection" name="games" style="display: inline-block">
+                        <option value="{{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'].title() }}">
+                            {{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'].title() }}
+                        </option>
+                    </select>
+                    {% endif %}
+                </div>
+            </div><!-- container 2 ends -->
+            <div name="container3" class="container">Container 3</div><!-- container 3 ends -->
+        </div>
+
+    </div>
+    <script src="{{ url_for('static', filename='javascript/results.js') }}" charset="utf-8"></script>
+</body>
+
+</html>

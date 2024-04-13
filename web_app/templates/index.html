@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Recommend a game 3000!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+
+<body>
+    <div class="main">
+        <div class="floating-container">
+            <form method="POST" action="/process" style="margin: 10px;">
+                <h1>{{ question1 }}</h1>
+                <input type="text" name="name">
+                <h1>{{ question2 }}</h1>
+                <input type="text" name="video_game_name">
+                <input style="display: none;" type="text" name="suggest_boolean" value="False">
+                <input style="display: none;" type="text" name="previous_game_list" value="False">
+                <button class="button" style="display: inline-block" type="submit">Submit</button>
+            </form>
+        </div>
+
+    </div>
+</body>
+
+</html>
