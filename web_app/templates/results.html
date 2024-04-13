@@ -24,9 +24,7 @@
                         <option value="{{ row.title() }}">{{ row.title() }}</option>
                         {% endfor %}
                         {% else %}
-                        {% for row in previous_game_list %}
-                        <option value="{{ row.title() }}">{{ row.title() }}</option>
-                        {% endfor %}
+                        <option value="{{ game_name.title()+' '+game_platforms_list[0] }}">{{ game_name.title()+' '+game_platforms_list[0] }}</option>
                         {% endif %}
                     </select>
                 </div>
@@ -41,11 +39,14 @@
                 </form>
             </div> <!-- container 1 ends -->
             <div name="container2" class="container">
+                {% if suggest_boolean == "True" %}
+                <h2>We recommend:</h2>
+                {% endif %}
                 <div class="game-selection-container">
                     {% if suggest_boolean == "True" %}
                     <select id="game-selection" name="games" style="display: inline-block">
-                        <option value="{{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'].title() }}">
-                            {{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'].title() }}
+                        <option value="{{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'] }}">
+                            {{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'] }}
                         </option>
                     </select>
                     {% endif %}

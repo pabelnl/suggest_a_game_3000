@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 import requests
 import joblib
-import os 
+from myconfig import *
 
 # load the model from disk
 kmeans = joblib.load("15759_games_kmean7.sav")
@@ -217,6 +217,9 @@ def get_suggestions(df, user_input):
         * The 'cluster_search' and 'get_cluster_for_game' functions (ensure these are documented). 
     """
     
+    if " available" in user_input:
+        user_input = user_input.split(" available")[0]
+    # Retrieve user selected game from the local df
     games_df = df[df['name'] == user_input].reset_index(drop=True)
     
     # One record scenario
@@ -226,7 +229,7 @@ def get_suggestions(df, user_input):
         return result
     
     # No records scenario
-    elif len(temp_df) == 0:
+    elif len(games_df) == 0:
         search_params = {
             "key": rawg_api_key,
             "search": user_input
