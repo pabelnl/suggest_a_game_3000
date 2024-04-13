@@ -2,30 +2,38 @@
 <html>
 
 <head>
-    <title>Results</title>
+    <title>Recommend a game 3000!</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
 </head>
 
 <body>
     <div class="main">
         <h1>Hello {{ name.title() }}</h1>
-        
+
         <div class="container-wrapper">
-            <div class="container">
+            <div name="container1" class="container">
                 <h2>Select a game from the list:</h2>
                 <div class="game-selection-container">
-                    <select name="games" style="display: inline-block">
-                        {% for item in data %}
-                        <option value="{{ item }}">{{ item }}</option>
+                    <select id="game-selection" name="games" style="display: inline-block">
+                        {% for row in data %}
+                        <option value="{{ row.title() }}">{{ row.title() }}</option>
                         {% endfor %}
                     </select>
                 </div>
-            </div>
-            <div class="container">Container 2</div>
-            <div class="container">Container 3</div>
+                <form id="form_" method="POST" action="/process">
+                    <input style="display: none;" type="text" name="name" value="{{ name.title() }}">
+                    <input style="display: none;" id="video_game_name" type="text" name="video_game_name">
+                    <input style="display: none;" type="text" name="suggest_boolean" value="True">
+                    <input style="display: none;" type="text" name="previous_game_list" value="{{ previous_game_list }}">
+                    <input class="get-suggestion-button" type="submit" value="Get suggestion">
+                </form>
+            </div> <!-- container 1 ends -->
+            <div name="container2" class="container">Container 2</div><!-- container 2 ends -->
+            <div name="container3" class="container">Container 3</div><!-- container 3 ends -->
         </div>
 
     </div>
+    <script src="{{ url_for('static', filename='javascript/results.js') }}" charset="utf-8"></script>
 </body>
 
 </html>

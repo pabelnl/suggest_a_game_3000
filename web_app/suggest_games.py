@@ -194,7 +194,7 @@ def cluster_search(temp_df, selected_game, df):
         
     print(f'We also recommend: {random_game["name"].iloc[0].title()} on {", ".join(available_platforms)}')
     
-def get_suggestions(df):
+def get_suggestions(df, user_input):
     """Provides an interactive game search and recommendation experience.
 
     Takes user input, searches for matching games in a DataFrame (df), and either presents
@@ -213,17 +213,18 @@ def get_suggestions(df):
         * The 'cluster_search' and 'get_cluster_for_game' functions (ensure these are documented). 
     """
     
-    user_input = input("Enter a game name:").lower()
     temp_df = df[df['name'].str.startswith(user_input)].reset_index(drop=True)
     
     # Multiple records scenario
     if len(temp_df) > 1:
-        print(f'Found {len(temp_df)} results:')
         
-        # Show a list of games and allow the user to select one
-        selected_game = select_game_from_list(temp_df)
+        return temp_df
+        # print(f'Found {len(temp_df)} results:')
         
-        cluster_search(temp_df,selected_game, df)
+        # # Show a list of games and allow the user to select one
+        # selected_game = select_game_from_list(temp_df)
+        
+        # cluster_search(temp_df,selected_game, df)
         
     # One record scenario
     elif len(temp_df) == 1:
