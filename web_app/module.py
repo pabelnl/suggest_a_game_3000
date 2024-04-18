@@ -124,8 +124,9 @@ def fill_na_for(df):
     """
     
     # Filling rating_title, genre and platform_name with undefined for nans
-    columns_undefined = ["rating_title_0", "rating_title_1", "rating_title_2", "rating_title_3", "platform_name_0", 
-                         "platform_name_1", "genre_0", "genre_1"]
+    columns_undefined = columns_undefined = ["rating_title_0", "rating_title_1", "rating_title_2", "rating_title_3", "platform_name_0", 
+                         "platform_name_1", "platform_name_2", "platform_name_3", "platform_name_4", "platform_name_5", 
+                         "platform_name_6", "genre_0", "genre_1"]
     # Iterating thru the columns
     for col in columns_undefined:
         # Checking if dataframe columns contains previous defined column
@@ -137,8 +138,6 @@ def fill_na_for(df):
         if col in df.columns:
             df[col].fillna(value=0.00, inplace=True)
     
-
-    # TODO: Increase support to more platforms
     # TODO: Increase support to more genres
     # Dropping unnecessary columns    
     df.drop(["platform_name_2","platform_name_3","platform_name_4"], axis=1, inplace=True, errors="ignore")
@@ -186,6 +185,14 @@ def clean_format_and_export(df, temporary=True):
     for column in columns_to_drop:
         if column in df.columns:  
             df.drop([column], axis=1, inplace=True)
+    
+    # TODO: Properly fix, meanwhile doing workaroud for known issue
+    # Dropping extra plaftorm and genre columns
+    platform_cols_to_drop = [f"platform_name_{i}" for i in range(7, 22)]
+    df.drop(columns=platform_cols_to_drop, inplace=True, errors='ignore')
+    
+    genre_cols_to_drop = [f"genre_{i}" for i in range(2, 22)]
+    df.drop(columns=genre_cols_to_drop, inplace=True, errors='ignore')
     
     # Perform fill nan values for predefined columns
     df = fill_na_for(df)
