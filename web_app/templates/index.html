@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Recommend a game 3000!</title>
+    <title>Recommend a Game 3000!</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
-
-<body>
-    <div class="main">
+<body style='background-image: url("{{ url_for('static', filename='imgs/background.jpg')}}");'>
+    <div class="main" >
         <div class="floating-container">
             <form method="POST" action="/process" style="margin: 10px;">
-                <h1>{{ question1 }}</h1>
-                <input type="text" name="name">
+                <h1>{{ question1 }}</h1> 
+
+                {% if name %} <input type="text" name="name" value="{{ name }}"> 
+                {% else %}
+                    <input type="text" name="name">
+                {% endif %}
+
                 <h1>{{ question2 }}</h1>
                 <input type="text" name="video_game_name">
-                <input style="display: none;" type="text" name="suggest_boolean" value="False">
-                <input style="display: none;" type="text" name="previous_game_list" value="False">
-                <button class="button" style="display: inline-block" type="submit">Submit</button>
+
+                <input type="hidden" name="suggest_boolean" value="False">
+                <input type="hidden" name="previous_game_list" value="False">
+
+                <button class="button" type="submit">Submit</button> 
             </form>
         </div>
-
     </div>
 </body>
-
 </html>

@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 
 <head>
@@ -6,10 +5,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
 </head>
 
-<body>
+<body style='background-image: url("{{ url_for('static', filename='imgs/background.jpg') }}");'>
     <div class="main">
-        <h1>Hello {{ name.title() }}</h1>
-
+        <h1 id="user_name" >Hello {{ name.title() }}</h1>
+        {% if suggest_boolean == "True" %}
+        <h2>We've found the perfect game for you based on your pick. Check it out!</h2>
+        <button onclick="goAgainClicked()" class="go-again-button">Go again?</button>
+        {% endif %}
         <div class="container-wrapper">
             <div name="container1" class="container">
                 {% if suggest_boolean == "False" %}
@@ -49,6 +51,7 @@
                             {{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'] }}
                         </option>
                     </select>
+                    <img class="game-image" src="{{ suggested_game['img_url'] }}" alt="Image Description" width="100" height="100">
                     {% endif %}
                 </div>
             </div><!-- container 2 ends -->

@@ -164,8 +164,7 @@ def fill_na_for(df):
             df[col].fillna(value=0.00, inplace=True)
     
     # TODO: Increase support to more genres
-    # Dropping unnecessary columns    
-    #df.drop(["platform_name_2","platform_name_3","platform_name_4"], axis=1, inplace=True, errors="ignore")
+    # Dropping unnecessary columns
     df.drop(["genre_2","genre_3","genre_4"], axis=1, inplace=True, errors="ignore")
 
     # Filter records with Nans for column "released"
@@ -253,8 +252,9 @@ def json_normalize(df, column):
             counter = counter + 1
             
         # Concatenate the main dataframe with the genre dfs
+        df_concat = df
         for tag in tags:
-            df_concat = pd.concat([df,tag], axis=1)
+            df_concat = pd.concat([df_concat,tag], axis=1)
         # Removing already normalized "genres_" column
         df_concat.drop([column], axis=1, inplace=True)
         
@@ -265,8 +265,8 @@ def json_normalize(df, column):
 
 def clean_format_and_export(df, temporary=True):
     # Dimensionality Reduction, Note: "Unnamed: 0" is added everytime the csv is exported and loaded
-    df.drop(["Unnamed: 0", "tba","slug","id","background_image", "dominant_color", "reviews_text_count", "added", "added_by_status",
-         "updated","user_game","saturated_color", "dominant_color", "short_screenshots", "parent_platforms", "stores"], axis=1, inplace=True, errors='ignore')
+    df.drop(["Unnamed: 0", "tba","slug","id", "dominant_color", "reviews_text_count", "added", "added_by_status",
+         "updated","user_game","saturated_color", "dominant_color", "short_screenshots", "parent_platforms", "stores"], axis=1, inplace=True, errors="ignore")
   
     # First Filter
     # - Excluding the records without any "ratings" and "rating" value 0
@@ -298,6 +298,13 @@ def clean_format_and_export(df, temporary=True):
     for column in columns_to_drop:
         if column in df.columns:  
             df.drop([column], axis=1, inplace=True)
+    # TODO: Properly fix, meanwhile doing workaroud for known issue
+    # Dropping extra plaftorm and genre columns
+    platform_cols_to_drop = [f"platform_name_{i}" for i in range(7, 22)]
+    df.drop(columns=platform_cols_to_drop, inplace=True, errors='ignore')
+    
+    genre_cols_to_drop = [f"genre_{i}" for i in range(2, 22)]
+    df.drop(columns=genre_cols_to_drop, inplace=True, errors='ignore')
     
     # Perform fill nan values for predefined columns
     df = fill_na_for(df)
@@ -313,7 +320,7 @@ def clean_format_and_export(df, temporary=True):
     # Remove unnamed column
     df.drop(["Unnamed: 0"], axis=1, inplace=True)
     # Replace empty tag with singleplayer, games should let be at least 1 singleplayer
-    df['tags_extracted'] = df['tags_extracted'].replace("[]", "['Singleplayer']")
+    df["tags_extracted"] = df["tags_extracted"].replace("[]", "['Singleplayer']")
     
     # Format rating
     df = format_rating(df)
@@ -496,7 +503,8 @@ def cluster_search(games_df, df):
     #
     result = {
         "name": random_game["name"].iloc[0],
-        "platforms": f'{", ".join(available_platforms)}'
+        "platforms": f'{", ".join(available_platforms)}',
+        "img_url": random_game["background_image"].iloc[0]
     }
 
     return result
@@ -523,7 +531,7 @@ def get_suggestions(df, user_input):
     if " available" in user_input:
         user_input = user_input.split(" available")[0]
     # Retrieve user selected game from the local df
-    games_df = df[df['name'] == user_input].reset_index(drop=True)
+    games_df = df[df["name"] == user_input].reset_index(drop=True)
     
     # One record scenario
     if len(games_df) == 1:
