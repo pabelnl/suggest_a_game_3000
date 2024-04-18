@@ -125,7 +125,8 @@ def fill_na_for(df):
     
     # Filling rating_title, genre and platform_name with undefined for nans
     columns_undefined = ["rating_title_0", "rating_title_1", "rating_title_2", "rating_title_3", "platform_name_0", 
-                         "platform_name_1", "platform_name_2", "platform_name_3", "platform_name_4", "genre_0", "genre_1"]
+                         "platform_name_1", "platform_name_2", "platform_name_3", "platform_name_4", "platform_name_5", 
+                         "platform_name_6", "genre_0", "genre_1"]
     # Iterating thru the columns
     for col in columns_undefined:
         # Checking if dataframe columns contains previous defined column
