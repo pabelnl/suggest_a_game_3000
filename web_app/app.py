@@ -43,7 +43,13 @@ def process_form():
     new_game_list = []
     new_game_platforms_list = []
     
-    if len(filtered_data) > 1:
+    if len(filtered_data) > 1 or len(filtered_data) == 0:
+        if len(filtered_data) == 0:
+            filtered_data_ = get_suggestions(df, game_name.lower())
+            # If new data is not empty assign it to previous filtered_data and continue the flow
+            filtered_data = filtered_data_ if len(filtered_data_) != 0 else filtered_data
+            
+            
         for i in range(len(filtered_data)):
             game_ = filtered_data.iloc[i].to_frame().T
             # Retrieve available platforms
@@ -55,6 +61,7 @@ def process_form():
             }
             new_game_list.append(f'{obj["name"]} available on: {obj["platforms"]}')
             new_game_platforms_list.append(f'available on: {obj["platforms"]}')
+            
     elif len(filtered_data) == 1:
         game_ = filtered_data.iloc[0].to_frame().T
         # Retrieve available platforms
@@ -66,7 +73,6 @@ def process_form():
             }
         new_game_list.append(f'{obj["name"]} available on: {obj["platforms"]}')
         new_game_platforms_list.append(f'available on: {obj["platforms"]}')
-        
         
     # Pass the filtered data to the template for display
     return render_template('results.html', new_game_list = new_game_list, 
