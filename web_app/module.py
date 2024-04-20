@@ -1,7 +1,8 @@
 import os
 import ast
 import pandas as pd
-
+from sklearn.impute import SimpleImputer
+import numpy as np
 
 # Get rawg api key from enviroment variable
 rawg_api_key = os.environ.get('RAWG_API_KEY')
@@ -170,12 +171,12 @@ def clean_format_and_export(df, temporary=True):
     for column in columns_to_normalize:
         if column in df.columns:
             # Peform string_to_object
-            df = string_to_object(df, column)
+            df = string_to_object(df.copy(), column)
             # Peform json normalize
-            df = json_normalize(df, column+"_")
+            df = json_normalize(df.copy(), column+"_")
     
     # Extracting singleplayer and multipler tags only
-    df = string_to_object(df, "tags")
+    df = string_to_object(df.copy(), "tags")
     df["tags_extracted"] = df["tags_"].apply(extract_by_id)
     df.drop(["tags_"], axis=1, inplace=True)
     print("* Completed string to object and json normalize operations \o/ \o/")
@@ -208,15 +209,90 @@ def clean_format_and_export(df, temporary=True):
     # Remove unnamed column
     df.drop(["Unnamed: 0"], axis=1, inplace=True)
     # Replace empty tag with singleplayer, games should let be at least 1 singleplayer
-    df['tags_extracted'] = df['tags_extracted'].replace("[]", "['Singleplayer']")
+    df["tags_extracted"] = df["tags_extracted"].replace('[]", "["Singleplayer"]')
     
     # Format rating
     df = format_rating(df)
+    
+    # Merging recommended and exceptional into 1 column and the same for meh and skip
+    df["recommended_score"] = df["exceptional_"] + df["recommended_"]
+    df["not_recommended_score"] = df["meh_"] + df["skip_"]
+    # Merging both columns substracting
+    df["recommend_percentage"] = df["recommended_score"] - df["not_recommended_score"]
+    df["recommend_percentage"] = np.abs(df["recommend_percentage"])
+    
+    # Dropping unnused columns
+    df.drop(["exceptional_","recommended_","meh_","skip_", 
+             "recommended_score", "not_recommended_score"], axis=1, inplace=True, errors="ignore")
+    
+    # After formatting the rating columns, we need to replace some 0 values with random values from the dataframe
+    for col in ["recommend_percentage", "playtime"]:
+        df = replace_x_with_random(df.copy(), col, 0.0)
+    
+    # Fixing values over 100 if they exists
+    df["recommend_percentage"] = df["recommend_percentage"].where(df["recommend_percentage"] <= 100, 100)
+    
+    # Changing every game name to lower case
+    df["name"] = df["name"].apply(lambda x: x.lower())
+    
     # Selecting name of the csv to export, if temporary flag is True, the name will change
     file_name1 = f"{len(df)}_TEMP_games_clean_formatted_ready_4_clustering.csv" if temporary else f"{len(df)}_games_clean_formatted_ready_4_clustering.csv"
     print("* Created export csv file ready for clustering named: ", file_name1)
     df.to_csv(file_name1)
     
+    return df
+
+def impute_zero_playtime_and_count(df, column_name="playtime"):
+    """
+    Imputes 0.0 values in the specified column with the mean and counts remaining zeros.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame containing the playtime column.
+        column_name (str): The name of the playtime column (defaults to "playtime").
+
+    Returns:
+        pandas.DataFrame: The DataFrame with the imputed column.
+    """
+
+    imputer = SimpleImputer(missing_values=0, strategy="mean")
+    df[column_name + "_"] = imputer.fit_transform(df[[column_name]])
+    df.drop(column_name, axis=1, inplace=True, errors="ignore")
+
+    zero_count = len(df[df[column_name + "_"] == 0])
+    print(f"Total rows with 0 playtime after imputation: {zero_count}")
+
+    return df
+
+def replace_x_with_random(df, column_name, x_value):
+    """
+    Replaces a specific value ("x") in a DataFrame column with random values sampled from the same column.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame containing the column to modify.
+        column_name (str): The name of the column to process.
+        x_value: The value within the column to be replaced.
+
+    Returns:
+        pandas.DataFrame: The DataFrame with the modified column.
+    """
+
+    # Filter for rows where the value needs replacement 
+    replace_mask = df[column_name] == x_value
+
+    # Get unique non-null values for sampling
+    replacement_values = df[column_name][~replace_mask].dropna().unique()
+
+    # Ensure there are values to sample from
+    if len(replacement_values) == 0:
+        print(f"Warning: Not enough non-null, non-'{x_value}' values in '{column_name}' for replacement.")
+        return df
+
+    # Replace 'x' with random samples
+    df.loc[replace_mask, column_name] = np.random.choice(
+        replacement_values, 
+        size=replace_mask.sum()
+    )
+
     return df
 
 def format_rating(df):
