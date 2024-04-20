@@ -8,19 +8,16 @@
     <div class="main" >
         <div class="floating-container">
             <form method="POST" action="/process" style="margin: 10px;">
-                <h1>{{ question1 }}</h1> 
-
-                {% if name %} <input type="text" name="name" value="{{ name }}"> 
+                <h1>{{ question1 }}</h1>
+                {% if name %}
+                <input type="text" name="name" value="{{ name }}"> 
                 {% else %}
-                    <input type="text" name="name">
+                <input type="text" name="name">
                 {% endif %}
-
                 <h1>{{ question2 }}</h1>
                 <input type="text" name="video_game_name">
-
                 <input type="hidden" name="suggest_boolean" value="False">
                 <input type="hidden" name="previous_game_list" value="False">
-
                 <button class="button" type="submit">Submit</button> 
             </form>
         </div>

@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 import numpy as np
 import random
 import warnings
@@ -7,7 +8,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 import requests
 import joblib
-from myconfig import *
+
+# Get rawg api key from enviroment variable
+rawg_api_key = os.environ.get('RAWG_API_KEY')
+if rawg_api_key: 
+    print("API Key loaded successfully!")
+else:
+    print("Error: RAWG_API_KEY environment variable not found.")
+
 
 # load the model from disk
 kmeans = joblib.load("15759_games_kmean7.sav")
@@ -366,6 +374,7 @@ def optimize_dtypes(df):
                     df_optimized[col] = pd.to_numeric(df_optimized[col], errors="coerce")
                 except ValueError:
                     try:
+                        #TODO Remove datetime scenario
                         df_optimized[col] = pd.to_datetime(df_optimized[col], errors="coerce")
                     except ValueError:
                         pass
@@ -552,6 +561,12 @@ def get_suggestions(df, user_input):
         if response.status_code == 200:
             data = response.json()
             print("* Searching games... returned: ",len(data["results"]), "records")
+            
+            # Return original df if api call returned 0 records
+            if len(data["results"]) == 0:
+                return df
+            
+            # Loop the results and add to games list
             games = []
             for g in data["results"]:
                 games.append(g)
