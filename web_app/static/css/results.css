@@ -1,9 +1,12 @@
+body {
+    font-family: 'Arial', sans-serif;
+    color:white;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
 }
-
-
 
 th,
 td {
@@ -16,6 +19,13 @@ td {
     max-height: 670px;
     overflow-y: auto;
     text-align: center;
+}
+
+.game-image {
+    margin-top: 10px;
+    width: 100%;
+    height: 77%;
+    border-radius: 6px;
 }
 
 select {
@@ -43,8 +53,18 @@ select {
     border: 1px solid #ccc;
     padding: 15px;
     text-align: center;
+    background-color: #1e31ff8f;
     box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.2);
     border-radius: 6px;
+}
+button, input[type="submit"] {
+    background-color: #008cba;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: linear-gradient(to bottom, #00a2eb, #0070ad);
 }
 
 .get-suggestion-button {
@@ -53,3 +73,15 @@ select {
     width: 50%;
     font-size: larger;
 }
+
+.go-again-button {
+    margin-top: 20px;
+    height: 50px;
+    width: 30%;
+    border-radius: 2%;
+    font-size: larger;
+}
+
+button:hover {
+    background-image: linear-gradient(-180deg, #1D95C9 0%, #17759C 100%);
+  }

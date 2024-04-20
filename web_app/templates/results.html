@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 
 <head>
@@ -6,10 +5,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
 </head>
 
-<body>
+<body style='background-image: url("{{ url_for('static', filename='imgs/background.jpg') }}");'>
     <div class="main">
-        <h1>Hello {{ name.title() }}</h1>
-
+        <h1 id="user_name" >Hello {{ name.title() }}</h1>
+        {% if suggest_boolean == "True" %}
+        <h2>We've found the perfect game for you based on your pick. Check it out!</h2>
+        <button onclick="goAgainClicked()" class="go-again-button">Go again?</button>
+        {% endif %}
         <div class="container-wrapper">
             <div name="container1" class="container">
                 {% if suggest_boolean == "False" %}
@@ -24,9 +26,7 @@
                         <option value="{{ row.title() }}">{{ row.title() }}</option>
                         {% endfor %}
                         {% else %}
-                        {% for row in previous_game_list %}
-                        <option value="{{ row.title() }}">{{ row.title() }}</option>
-                        {% endfor %}
+                        <option value="{{ game_name.title()+' '+game_platforms_list[0] }}">{{ game_name.title()+' '+game_platforms_list[0] }}</option>
                         {% endif %}
                     </select>
                 </div>
@@ -41,17 +41,21 @@
                 </form>
             </div> <!-- container 1 ends -->
             <div name="container2" class="container">
+                {% if suggest_boolean == "True" %}
+                <h2>We recommend:</h2>
+                {% endif %}
                 <div class="game-selection-container">
                     {% if suggest_boolean == "True" %}
                     <select id="game-selection" name="games" style="display: inline-block">
-                        <option value="{{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'].title() }}">
-                            {{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'].title() }}
+                        <option value="{{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'] }}">
+                            {{ suggested_game['name'].title()+' available on: '+suggested_game['platforms'] }}
                         </option>
                     </select>
+                    <img class="game-image" src="{{ suggested_game['img_url'] }}" alt="Image Description" width="100" height="100">
                     {% endif %}
                 </div>
             </div><!-- container 2 ends -->
-            <div name="container3" class="container">Container 3</div><!-- container 3 ends -->
+            <!-- <div name="container3" class="container">Container 3</div>-->
         </div>
 
     </div>
